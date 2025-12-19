@@ -11,7 +11,14 @@ import com.sist.web.vo.CampingVO;
 @Mapper
 @Repository
 public interface CampingMapper {
-	@Select("SELECT id, name, image, street_address "
+	@Select("SELECT id, name, image, street_address, rownum "
+		  + "FROM camping "
+		  + "WHERE rownum <= 4"
+		  + "ORDER BY id DESC ")
+	public List<CampingVO> campingMainData();
+	
+	
+	@Select("SELECT id, name, image "
 		  + "FROM camping "
 		  + "ORDER BY id ASC "
 		  + "OFFSET #{start} ROWS FETCH NEXT 12 ROWS ONLY")

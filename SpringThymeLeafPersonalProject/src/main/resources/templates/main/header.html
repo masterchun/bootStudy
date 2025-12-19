@@ -30,9 +30,32 @@
 								<li><a href="no-sidebar.html">커뮤니티</a></li>
 								<li th:if="${session.id == null}"><a href="/login">로그인</a></li>
 								<li style="color: white" th:if="${session.id != null}">[[${session.name}]]님 로그인되었습니다</li>
-								<li th:if="${session.id != null}"><button>로그아웃</button></li>
+								<li th:if="${session.id != null}"><button @click="logout()">로그아웃</button></li>
 							</ul>
 						</nav>
 				</div>
+		<script>
+		const logoutApp = Vue.createApp({
+			data() {
+				return {
+
+				}
+			},
+			
+			methods: {
+				// 로그아웃
+				logout() {
+					axios.get('http://localhost/member/logout_vue/')
+					.then(response => {
+						if(response.data === 'yes') {
+							location.href = "/"
+						}
+					})
+				},
+			}
+		})
+		logoutApp.config.compilerOptions.delimiters = ['((', '))']
+		logoutApp.mount("#nav")
+	</script>
 </body>
 </html>
