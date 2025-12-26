@@ -38,7 +38,7 @@
             <div class="row">
                 <div class="col-lg-3">
                     <div class="header__logo">
-                        <a href="./index.html"><img src="/img/logo.png" alt=""></a>
+                        <a href="/main"><img src="/img/logo.png" alt=""></a>
                     </div>
                 </div>
                 <div class="col-lg-9">
@@ -52,10 +52,17 @@
                                     <li><a href="./checkout.html">비밀번호 찾기</a></li>
                                 </ul>
                             </li>
+                            <li><a href="/food/list">맛집</a>
+                                <ul class="header__menu__dropdown">
+                                    <li><a href="/food/list">맛집 목록</a></li>
+                                    <li><a href="/food/find">맛집 검색</a></li>
+                                    <li><a href="/food/reserve">맛집 예약</a></li>
+                                </ul>
+                            </li>
                             <li><a href="/seoul">서울여행</a></li>
                             <li><a href="/busan">부산여행</a></li>
                             <li><a href="./shop-grid.html">Shop</a></li>
-                            <li><a href="./blog.html">커뮤니티</a></li>
+                            <li><a href="/board/list">커뮤니티</a></li>
                             <li><a href="./contact.html">마이페이지</a></li>
                         </ul>
                     </nav>
