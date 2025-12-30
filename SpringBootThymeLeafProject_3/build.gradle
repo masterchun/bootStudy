@@ -37,6 +37,7 @@ dependencies {
 	implementation 'jakarta.el:jakarta.el-api:6.0.1'
 	implementation 'org.springframework.boot:spring-boot-starter-aop:3.4.12'
 	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.4.0'
+	implementation 'org.json:json:20231013'
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.oracle.database.jdbc:ojdbc11'
