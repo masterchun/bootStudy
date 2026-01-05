@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -14,7 +15,7 @@
 	
 	<style type="text/css">
 		.container {
-			margin-top: 50px;
+			margin-top: 30px;
 		}
 		.row {
 			margin: 0px auto;
@@ -31,7 +32,17 @@
 	</style>
 </head>
 <body>
-	<div class="container">
+	<div class="container" style="margin-top: 10px">
+		<div class="row text-right">
+			<c:if test="${sessionScope.id == null }">
+				<a href="/member/login" class="btn btn-sm btn-info">로그인</a>
+			</c:if>
+			<c:if test="${sessionScope.id != null }">
+				<a href="member/logout" class="btn btn-sm btn-danger">로그아웃</a>
+			</c:if>
+		</div>
+	</div>
+	<div class="container" id="list_app">
 		<div class="row">
 		<div class="col-md-3" v-for="(vo, index) in store.list" :key="vo.no">
 	    <div class="thumbnail">
@@ -54,6 +65,7 @@
 	</div>
 	<script src="/js/axios.js"></script>
 	<script src="/js/recipeStore.js"></script>
+		<script src="/js/memberStore.js"></script>
 	<script>
 		const {createApp, onMounted} = Vue
 		const {createPinia} = Pinia
@@ -73,7 +85,15 @@
 		})
 		
 		recipeApp.use(createPinia())
-		recipeApp.mount(".container")
+		recipeApp.mount("#list_app")
+	
+		
+		const logApp = createApp({
+			
+		})
+		
+		logApp.use(createPinia())
+		logApp.mount('#login_app')
 	</script>
 </body>
 </html>

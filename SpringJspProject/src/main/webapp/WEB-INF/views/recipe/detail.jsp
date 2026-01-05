@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -12,9 +13,13 @@
 	<script src="https://unpkg.com/vue-demi"></script>
 	<script src="https://unpkg.com/pinia@2/dist/pinia.iife.js"></script>
 	
+	<script>
+		const SESSION_ID = '${sessionScope.id}'
+	</script>
+	
 	<style type="text/css">
 		.container {
-			margin-top: 50px;
+			margin-top: 30px;
 		}
 		.row {
 			margin: 0px auto;
@@ -31,8 +36,18 @@
 	</style>
 </head>
 <body>
-	<div class="container">
-		<div class="row" id="recipe_detail">
+	<div class="container" style="margin-top: 10px">
+		<div class="row text-right">
+			<c:if test="${sessionScope.id == null }">
+				<a href="/member/login" class="btn btn-sm btn-info">로그인</a>
+			</c:if>
+			<c:if test="${sessionScope.id != null }">
+				<a href="member/logout" class="btn btn-sm btn-danger">로그아웃</a>
+			</c:if>
+		</div>
+	</div>
+	<div class="container" id="recipe_detail">
+		<div class="row">
 			<table class="table">
 				<tbody>
 					<tr>
@@ -99,11 +114,64 @@
 			</table>
 		</div>
 		<div class="row" id="recipe_reply" class="margin-top: 20px">
-		
+			<table class="table">
+				<tbody>
+					<tr>
+						<td>
+							<table class="table" v-for="(rvo, index) in store.reply_list" :key="index">
+								<tbody>
+									<tr>
+										<td class="text-left">* {{ rvo.name }}&nbsp;({{ rvo.dbday }})</td>
+										<td class="text-right">
+											<button class="btn-xs btn-success" v-if="store.sessionId===rvo.id"
+												@click="store.toggleUpdate(rvo.no, rvo.msg)">
+												{{ store.upReplyNo === rvo.no ? '취소' : '수정' }}
+											</button>
+											<button class="btn-xs btn-danger" v-if="store.sessionId===rvo.id"
+												@click="store.replyDelete(rvo.no)">삭제</button>
+										</td>
+									</tr>
+									<tr>
+										<td colspan="2" class="text-left">
+											<pre style="white-space: pre-wrap;">{{ rvo.msg }}</pre>
+										</td>
+									</tr>
+									<tr>
+										<td colspan="2" class="text-left" v-if="store.upReplyNo === rvo.no">
+											<textarea rows="5" cols="100" style="float: left;" v-model="store.msg"
+												v-model="store.updateMsg[rvo.no]"></textarea>
+											<button type="button" class="btn-success" 
+												style="width: 100px;height: 103px;float: left;" 
+												@click="store.replyUpdate(rvo.no)">
+													댓글 수정
+											</button>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			<table class="table" v-if="store.sessionId">
+				<tbody>
+					<tr>
+						<td>
+							<textarea rows="5" cols="100" style="float: left;" v-model="store.msg"></textarea>
+							<button type="button" class="btn-success" 
+								style="width: 100px;height: 103px;float: left;" 
+								@click="store.replyInsert()">
+								댓글 쓰기
+							</button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
 		</div>
 	</div>
 	<script src="/js/axios.js"></script>
 	<script src="/js/recipeStore.js"></script>
+	<script src="/js/replyStore.js"></script>
 	<script>
 		const {createApp, onMounted} = Vue
 		const {createPinia} = Pinia
@@ -111,15 +179,20 @@
 		const detailApp = createApp({
 			setup() {
 				const rStore = useRecipeStore()
+				const store = useReplyStore()
+				
 				const params = new URLSearchParams(location.search)
 				const no = params.get("no")
 				
 				onMounted(() => {
 					rStore.recipeDetailData(no)
+					store.sessionId = SESSION_ID
+					store.replyListData(no)
 				})
 				
 				return {
-					rStore
+					rStore,
+					store
 				}
 			}
 		})
