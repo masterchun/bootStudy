@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 
+		동적 = 조건에 따라서 SQL 구문을 동적으로 생성 (다중 검색) = 필터링
+		가독성 / 유지 보수
+		
+		태그 정리
+		<if> = <if test="조건문">
+		<select id="" parameterType="hashmap" resultType="">
+			select * from table_name
+			WHERE 1=1 or <where></where>
+			<if test="name != null and name != ''">
+				AND name = #{name}
+			</if>
+		</select>
+		
+		where => 조건에 맞는 내용이 없는 경우 where 생성이 안된다
+		<where> => 뒤에 AND나 OR를 자동 제거
+			<trim prefixOverrides="AND"> => 포함
+		
+		<trim>
+			=> 추가 / 제거
+					prefix / suffix => 앞 뒤에 추가
+					prefixOverrides / suffixOverrides => 앞뒤 제거
+					================================= AND / OR
+		<choose> : 다중 조건문
+			<choose>
+				<when test=""></when>
+				<otherwise></otherwise> else / default
+			</choose>
+			
+			<set>
+			
+				UPDATE table_name
+				<set>
+					<if test=""> name = #{name}
+				</set>
+				
+			<foreach> : 루프 문장
+				=> collection="" : 배열 / List
+				=> item="" : 받는 변수
+				=> open="("
+				=> close=")"
+				=> seperator="구분자"
+				String[] aaa={"A","B","C","D","E"}
+				IN('A', 'B',...)
+				WHERE column IN
+				<foreach collection="aaa" item="a"
+					open="(" close=")" seperator=",">
+				</foreach>
+				
+			<sql> : 반복 제거
+			
+			${} => sql injection 위험이 있기 때무네에 이런걸 동적쿼리 사용
+			
+			동적쿼리 위치는 상관 없다 (where 문장이 아니더라도 됨)
+			
+			기타 : 1 일반 CRUD
+					  2 JOIN 처리 : <resultMap> => ResultSet
+					  							=> 컬럼 전체 매칭
+					  							=> 인덱스 이용하지 않음
+					  							 	 컬럼 이용
+					  							=> XML + Annotation
+					  							ORM : 데이터베이스 연동하는 라이브러리
+					  3 SUBQUERY 처리
+					  4 동적 쿼리
+					  5 프로시저 호출 (옵션) / 트리거 => 호불호 : 보안
+					  	=> 가독성이 떨어진다, 수정하기 어렵다
+ -->
+<mapper namespace="com.sist.web.mapper.FoodMapper">
+	<!-- 리스트 -->
+	<resultMap type="com.sist.web.vo.FoodVO" id="foodMap">
+		<result property="fno" column="fno" />
+		<result property="poster" column="poster" />
+		<result property="name" column="name" />
+	</resultMap>
+	<!-- 상세보기 -->
+	<resultMap type="com.sist.web.vo.FoodVO" id="detailMap">
+		<result property="fno" column="fno" />
+		<result property="poster" column="poster" />
+		<result property="name" column="name" />
+		<result property="hit" column="hit" />
+		<result property="jjimcount" column="jjimcount" />
+		<result property="type" column="type" />
+		<result property="phone" column="phone" />
+		<result property="parking" column="parking" />
+		<result property="address" column="address" />
+		<result property="theme" column="theme" />
+		<result property="price" column="price" />
+		<result property="time" column="time" />
+		<result property="images" column="images" />
+		<result property="content" column="content" />
+		<result property="score" column="score" />
+	</resultMap>
+	<!-- 검색 -->
+	<select id="foodFindData" resultType="com.sist.web.vo.FoodVO"
+		parameterType="hashmap">
+		SELECT fno, poster, name
+		FROM menupan_food
+		<where>
+			<if test="fsArr != null">
+				<trim prefixOverrides="OR">
+					<foreach collection="fsArr" item="fd">
+						<trim prefix="OR">
+							<choose>
+								<when test="fd == 'N'.toString()">
+									name Like '%'||#{ss}||'%'
+								</when>
+								<when test="fd == 'T'.toString()">
+									type Like '%'||#{ss}||'%'
+								</when>
+								<when test="fd == 'A'.toString()">
+									address Like '%'||#{ss}||'%'
+								</when>
+							</choose>
+						</trim>
+					</foreach>
+				</trim>
+			</if>
+		</where>
+		OFFSET #{start} ROWS FETCH NEXT 12 ROWS ONLY
+	</select>
+	<select id="foodFindTotalData" resultType="int"
+		parameterType="hashmap">
+		SELECT CEIL(COUNT(*) / 12.0)
+		FROM menupan_food
+		<where>
+			<if test="fsArr != null">
+				<trim prefixOverrides="OR">
+					<foreach collection="fsArr" item="fd">
+						<trim prefix="OR">
+							<choose>
+								<when test="fd == 'N'.toString()">
+									name Like '%'||#{ss}||'%'
+								</when>
+								<when test="fd == 'T'.toString()">
+									type Like '%'||#{ss}||'%'
+								</when>
+								<when test="fd == 'A'.toString()">
+									address Like '%'||#{ss}||'%'
+								</when>
+							</choose>
+						</trim>
+					</foreach>
+				</trim>
+			</if>
+		</where>
+		OFFSET #{start} ROWS FETCH NEXT 12 ROWS ONLY
+	</select>
+</mapper>
